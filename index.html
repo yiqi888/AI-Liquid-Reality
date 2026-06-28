@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Liquid Reality</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+}
+
+body {
+  overflow: hidden;
+  background: #05060a;
+  color: #fff;
+}
+
+/* WebGL canvas */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+/* UI层 */
+.hero {
+  position: relative;
+  z-index: 2;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+h1 {
+  font-size: 64px;
+  font-weight: 600;
+  letter-spacing: -1px;
+
+  background: linear-gradient(120deg, #7cf7ff, #a78bfa, #00d4ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  filter: drop-shadow(0 0 30px rgba(120,200,255,0.25));
+}
+
+p {
+  margin-top: 18px;
+  font-size: 18px;
+  opacity: 0.7;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.btn {
+  margin-top: 30px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(120,200,255,0.25);
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="scene"></canvas>
+
+<div class="hero">
+  <h1>AI Liquid Reality</h1>
+  <p>一个由流体、光与粒子构成的智能空间系统</p>
+  <p>重新定义界面与计算之间的边界</p>
+  <button class="btn">探索</button>
+</div>
+
+<!-- Three.js -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+/* =========================
+   Scene Setup
+========================= */
+
+const canvas = document.getElementById("scene");
+
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+  alpha: true,
+  antialias: true
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  70,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+
+camera.position.z = 2;
+
+/* =========================
+   1. 流体 Shader 背景
+========================= */
+
+const geometry = new THREE.PlaneGeometry(2, 2);
+
+const material = new THREE.ShaderMaterial({
+  uniforms: {
+    uTime: { value: 0 }
+  },
+  vertexShader: `
+    void main() {
+      gl_Position = vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    precision highp float;
+
+    uniform float uTime;
+
+    float noise(vec2 p){
+      return sin(p.x*3.0 + uTime) * cos(p.y*3.0 + uTime*0.7);
+    }
+
+    void main(){
+      vec2 uv = gl_FragCoord.xy / 1300.0;
+
+      float n = noise(uv * 4.0);
+
+      vec3 blue = vec3(0.0, 0.7, 1.0);
+      vec3 purple = vec3(0.6, 0.3, 1.0);
+      vec3 cyan = vec3(0.0, 1.0, 0.8);
+
+      vec3 col = mix(blue, purple, n);
+      col = mix(col, cyan, sin(uTime + uv.x * 5.0));
+
+      // Apple-like glow falloff
+      float vignette = smoothstep(1.2, 0.2, length(uv - 0.5));
+
+      gl_FragColor = vec4(col * vignette, 1.0);
+    }
+  `
+});
+
+scene.add(new THREE.Mesh(geometry, material));
+
+/* =========================
+   2. 粒子系统（空间漂浮）
+========================= */
+
+const particlesCount = 1200;
+const positions = new Float32Array(particlesCount * 3);
+
+for (let i = 0; i < particlesCount; i++) {
+  positions[i * 3] = (Math.random() - 0.5) * 5;
+  positions[i * 3 + 1] = (Math.random() - 0.5) * 5;
+  positions[i * 3 + 2] = (Math.random() - 0.5) * 5;
+}
+
+const particlesGeo = new THREE.BufferGeometry();
+particlesGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+const particlesMat = new THREE.PointsMaterial({
+  size: 0.008,
+  color: new THREE.Color("#7cf7ff"),
+  transparent: true,
+  opacity: 0.7
+});
+
+const particles = new THREE.Points(particlesGeo, particlesMat);
+scene.add(particles);
+
+/* =========================
+   3. 动画
+========================= */
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  material.uniforms.uTime.value += 0.01;
+
+
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+/* =========================
+   Resize
+========================= */
+
+window.addEventListener("resize", () => {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+</script>
+
+</body>
+</html>
