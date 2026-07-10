@@ -414,11 +414,27 @@ animate();
 
 const modal=document.getElementById("loginModal");
 
-document.querySelector(".btn").onclick=()=>{
+const exploreBtn = document.querySelector(".btn");
 
+exploreBtn.onclick = () => {
+
+    // 清空输入框
+    document.querySelectorAll(".glass-card input").forEach(input => {
+        input.value = "";
+    });
+
+    // 清空错误提示
+    const error = document.getElementById("loginError");
+    error.innerHTML = "";
+    error.classList.remove("show");
+
+    // 显示登录框
     modal.classList.add("show");
 
-}
+    // 自动聚焦用户名
+    document.querySelector(".glass-card input").focus();
+
+};
 
 document.getElementById("closeBtn").onclick=()=>{
 
