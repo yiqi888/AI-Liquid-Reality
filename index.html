@@ -79,6 +79,149 @@ p {
   transform: scale(1.05);
   box-shadow: 0 0 40px rgba(120,200,255,0.25);
 }
+
+/* =========================
+   Glass Login
+========================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(12px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    opacity:0;
+    visibility:hidden;
+    transition:.35s;
+    z-index:99;
+}
+
+.modal.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.glass-card{
+
+    width:380px;
+
+    padding:40px;
+
+    border-radius:28px;
+
+    background:rgba(255,255,255,.08);
+
+    backdrop-filter:blur(35px);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    box-shadow:
+
+    0 25px 80px rgba(0,0,0,.45),
+
+    inset 0 1px rgba(255,255,255,.15);
+
+}
+
+.glass-card h2{
+
+    font-size:34px;
+
+    margin-bottom:8px;
+
+    background:linear-gradient(90deg,#7cf7ff,#b388ff);
+
+    -webkit-background-clip:text;
+
+    -webkit-text-fill-color:transparent;
+
+}
+
+.glass-card p{
+
+    margin:0 0 25px;
+
+    opacity:.65;
+
+}
+
+.glass-card input{
+
+    width:100%;
+
+    padding:15px 18px;
+
+    margin-bottom:15px;
+
+    border:none;
+
+    outline:none;
+
+    border-radius:16px;
+
+    background:rgba(255,255,255,.08);
+
+    color:white;
+
+    font-size:16px;
+
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(255,255,255,.12);
+
+}
+
+.glass-card input::placeholder{
+
+    color:rgba(255,255,255,.45);
+
+}
+
+.actions{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-top:10px;
+
+}
+
+.glass-btn{
+
+    flex:1;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:999px;
+
+    color:white;
+
+    cursor:pointer;
+
+    background:rgba(255,255,255,.08);
+
+    backdrop-filter:blur(25px);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    transition:.3s;
+
+}
+
+.glass-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 0 25px rgba(124,247,255,.35);
+
+}
+
 </style>
 </head>
 
@@ -91,6 +234,22 @@ p {
   <p>An intelligent space system composed of fluids, light, and particles.</p>
   <p>Redefining the boundary between interface and computation</p>
   <button class="btn">explore</button>
+
+<div id="loginModal" class="modal">
+  <div class="glass-card">
+    <h2>Welcome</h2>
+    <p>Sign in to AI Liquid Reality</p>
+
+    <input type="text" placeholder="Username">
+    <input type="password" placeholder="Password">
+
+    <div class="actions">
+      <button class="glass-btn" id="loginBtn">Login</button>
+      <button class="glass-btn" id="closeBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <!-- Three.js -->
@@ -209,6 +368,37 @@ function animate() {
 }
 
 animate();
+
+const modal=document.getElementById("loginModal");
+
+document.querySelector(".btn").onclick=()=>{
+
+    modal.classList.add("show");
+
+}
+
+document.getElementById("closeBtn").onclick=()=>{
+
+    modal.classList.remove("show");
+
+}
+
+modal.onclick=(e)=>{
+
+    if(e.target===modal){
+
+        modal.classList.remove("show");
+
+    }
+
+}
+
+document.getElementById("loginBtn").onclick=()=>{
+
+    alert("Login Success");
+
+}
+
 
 /* =========================
    Resize
